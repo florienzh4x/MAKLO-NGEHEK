@@ -52,7 +52,7 @@ cekupdate(){
 		Vers=$(echo $cekupdate | grep -Po '(?<=version:")[^",]*')
 		BUILD=$(echo $cekupdate | grep -Po '(?<=build:")[^",]*')
 		if [[ $version != $Vers || $build != $BUILD ]]; then
-			printf "Version $Vers (Build: $BUILD) is Avaiable. Updating Script... "
+			printf "Version $Vers (Build: $BUILD) is Available. Updating Script... "
 			mv $0 $0_old; wget --quiet --no-check-certificate "https://raw.githubusercontent.com/florienzh4x/MAKLO-NGEHEK/master/MakloNgehek" -O $0; chmod +x $0; rm $0_old;
 			printf "[ OK ]\n\n"
 
