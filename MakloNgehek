@@ -43,7 +43,7 @@ downshell(){
 }
 cekupdate(){
 	version="1.0"
-	build="maklo01"
+	build="maklo02"
 	LinkUpdate="https://raw.githubusercontent.com/florienzh4x/MAKLO-NGEHEK/master/project"
 	cekupdate=$(curl -s "$LinkUpdate" -L)
 	if [[ $cekupdate == '' ]]; then
