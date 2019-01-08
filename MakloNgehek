@@ -43,7 +43,7 @@ downshell(){
 }
 cekupdate(){
 	version="1.0"
-	build="maklo02"
+	build="maklo03"
 	LinkUpdate="https://raw.githubusercontent.com/florienzh4x/MAKLO-NGEHEK/master/project"
 	cekupdate=$(curl -s "$LinkUpdate" -L)
 	if [[ $cekupdate == '' ]]; then
@@ -51,11 +51,9 @@ cekupdate(){
 	else
 		Vers=$(echo $cekupdate | grep -Po '(?<=version:")[^",]*')
 		BUILD=$(echo $cekupdate | grep -Po '(?<=build:")[^",]*')
-		if [[ $version == $Vers || $build == $BUILD ]]; then
-			printf ''
-		else
-			printf "Version $Vers is Avaiable. Updating Script... "
-			mv $0 $0_old; wget --quiet --no-check-certificate "LINK GITHUB" -O $0; chmod +x $0; rm $0_old;
+		if [[ $version != $Vers || $build != $BUILD ]]; then
+			printf "Version $Vers (Build: $BUILD) is Avaiable. Updating Script... "
+			mv $0 $0_old; wget --quiet --no-check-certificate "https://raw.githubusercontent.com/florienzh4x/MAKLO-NGEHEK/master/MakloNgehek" -O $0; chmod +x $0; rm $0_old;
 			printf "[ OK ]\n\n"
 
 		fi
