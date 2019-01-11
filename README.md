@@ -36,6 +36,8 @@ MAKLOM    MAKLOMAKLOMAK    MAKLOM
 ● Wordpress Echelon File Upload
 ● Wordpress FormCraft File Upload
 ● Wordpress Themify File Upload
+● Wordpress Village File Upload
+● Wordpress Satoshi File Upload
 ● Joomla Com_Fabrik
 ● Joomla Com_Jbcatalog
 </pre>
